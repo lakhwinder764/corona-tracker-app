@@ -8,12 +8,19 @@ import Table from "./Table";
 import {sortData} from "./util";
 import LineGraph from './LineGraph';
 import "leaflet/dist/leaflet.css";
-
+import {prettyprintstat} from "./util";
 function App() {
    const [countries1,setcountries]=useState([]);
    const[countryinfo,setcountryinfo]=useState({});
     const [country,setcountry]=useState("worldwide");  
     const [Data,setTableData]=useState([]);
+    const [mapcenter,setmapcenter]=useState({
+      lat:"20",
+      lng:"77"
+    }); 
+    const [mapcountries,setmapcountries]=useState([]);
+    const [casetype,setcasetype]=useState([]);    
+    
     useEffect(() => {
     axios.get("https://disease.sh/v3/covid-19/all")
     .then((res)=>{
@@ -42,8 +49,10 @@ function App() {
       })
      const sortedData=sortData(res.data);
       setcountries(countries);
-
+      setmapcountries(sortedData);
       setTableData(sortedData);
+      
+      
      
      
     }
@@ -67,9 +76,12 @@ function App() {
          
         
           setcountry(code);
-          console.log(res.data);
+          
           setcountryinfo(res.data);
-         console.log(countryinfo);
+         setmapcenter([res.data.countryInfo.lat,res.data.countryInfo.long]);
+          console.log(mapcountries);
+         
+         
       })
     
         }
@@ -77,7 +89,7 @@ function App() {
     <div className="app">
         <div className="app_left">
            <div className="app_header">
-             <h1>hello world</h1>
+             <h1>COVID-19 TRACKER</h1>
              <FormControl className="app_dropdown">
                  <Select
                variant="outlined"
@@ -99,12 +111,12 @@ function App() {
                </FormControl>
       </div>
              <div className="app_stats">
-              <InputBox title="coronavirus cases" total={countryinfo.cases} cases={countryinfo.todayCases}/>
-              <InputBox title="recovered cases" total={countryinfo.recovered}  cases={countryinfo.todayRecovered}/>
-              <InputBox title="deaths" total={countryinfo.deaths}   cases={countryinfo.todayDeaths}/>       
+              <InputBox title="coronavirus cases" total={countryinfo.cases} cases={prettyprintstat(countryinfo.todayCases)}/>
+              <InputBox title="recovered cases" total={countryinfo.recovered}  cases={prettyprintstat(countryinfo.todayRecovered)}/>
+              <InputBox title="deaths" total={countryinfo.deaths}   cases={prettyprintstat(countryinfo.todayDeaths)}/>       
        
        </div>
-               <Map/>
+               <Map countries={mapcountries} mapcenter={mapcenter}/> 
              </div>
 
 

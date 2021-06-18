@@ -1,4 +1,6 @@
-import React from 'react'
+import React from 'react';
+import "./input.css";
+
 import {Card,CardContent,Typography} from "@material-ui/core";
 
 const Input=(props)=> {
