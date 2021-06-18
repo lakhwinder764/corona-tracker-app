@@ -6,9 +6,8 @@ import InputBox from "./Input";
 import Map from "./Map"; 
 import Table from "./Table";
 import {sortData} from "./util";
-import LineGraph from './LineGraph';
 import "leaflet/dist/leaflet.css";
-import {prettyprintstat} from "./util";
+import numeral from "numeral";
 function App() {
    const [countries1,setcountries]=useState([]);
    const[countryinfo,setcountryinfo]=useState({});
@@ -19,7 +18,7 @@ function App() {
       lng:"77"
     }); 
     const [mapcountries,setmapcountries]=useState([]);
-    const [casetype,setcasetype]=useState([]);    
+    const [casestype,setcasestype]=useState("cases");    
     
     useEffect(() => {
     axios.get("https://disease.sh/v3/covid-19/all")
@@ -111,12 +110,12 @@ function App() {
                </FormControl>
       </div>
              <div className="app_stats">
-              <InputBox title="coronavirus cases" total={countryinfo.cases} cases={prettyprintstat(countryinfo.todayCases)}/>
-              <InputBox title="recovered cases" total={countryinfo.recovered}  cases={prettyprintstat(countryinfo.todayRecovered)}/>
-              <InputBox title="deaths" total={countryinfo.deaths}   cases={prettyprintstat(countryinfo.todayDeaths)}/>       
+              <InputBox  onClick={e=>setcasestype("cases")} title="coronavirus cases" total={`${numeral(countryinfo.cases).format("0.0a")} Total`} cases={numeral(countryinfo.todayCases).format("0.0a")}/>
+              <InputBox  onClick={e=>setcasestype("recovered")}  title="recovered cases" total={`${numeral(countryinfo.recovered).format("0.0a")} Total`}  cases={numeral(countryinfo.todayRecovered).format("0.0a")}/>
+              <InputBox   onClick={e=>setcasestype("deaths")}  title="deaths" total={`${numeral(countryinfo.deaths).format("0.0a")} Total`}   cases={numeral(countryinfo.todayDeaths).format("0.0a")}/>       
        
        </div>
-               <Map countries={mapcountries} mapcenter={mapcenter}/> 
+               <Map casestype={casestype} countries={mapcountries} mapcenter={mapcenter}/> 
              </div>
 
 
@@ -124,8 +123,8 @@ function App() {
      <CardContent>
        <h3> Live cases By Country </h3>
        <Table countries={Data}/>
-       <h3>Worldwide new cases</h3>
-       <LineGraph/>
+      
+     
 
        </CardContent>
   </Card>
